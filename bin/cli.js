@@ -39,11 +39,15 @@
      outputFormat = opt.options.format || 'csv';
   }
   var features = {};
+  // Discards everything starting before argument 1 and returns an array of the rest of the arguments
   var featuresToExtract = opt.argv.slice(1);
-
   for (var i = 0; i < featuresToExtract.length; i++) {
       features[featuresToExtract[i]] = [];
   }
+
+  // Features is an array holing the name of the features along with the values
+
+//  console.log("features = "+ JSON.stringify(features));
 
   // utility to convert typed arrays to normal arrays
   function typedToArray(t) {
@@ -68,8 +72,11 @@
   function extractFeatures(chunk) {
     //make it a F32A for efficiency
     var frame = arrayToTyped(chunk);
+
     //run the extraction of selected features
+    //console.log("Calling Meyda.extract");
     var fset = Meyda.extract(featuresToExtract, frame);
+    //console.log("fset = " + fset);
     for (let j = 0; j < featuresToExtract.length; j++) {
         var feature = fset[featuresToExtract[j]];
         features[featuresToExtract[j]].push(feature);
@@ -166,6 +173,7 @@
           for(let i=0; i<frameCount; i++){
             for(let j=0; j<featuresToExtract.length; j++){
               var feature = features[featuresToExtract[j]];
+
               if(typeof feature[i] === 'object'){
                 for(let f = 0; f < Object.keys(feature[i]).length; f++)
                   output(feature[i][f] + ',');
@@ -192,6 +200,7 @@
 
           for(let i=0; i<frameCount; i++){
             var feature = features[featuresToExtract[j]];
+            console.log("feature = " + feature);
             if(typeof feature[i] === 'object'){
               var keys = Object.keys(feature[i]);
               for(let f = 0; f < keys.length; f++){
